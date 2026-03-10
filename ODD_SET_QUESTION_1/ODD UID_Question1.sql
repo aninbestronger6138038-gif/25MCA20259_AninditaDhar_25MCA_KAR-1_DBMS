@@ -1,56 +1,44 @@
+---Anindita Dhar ; 25MCA20259
+---question 1
 
-CREATE TABLE books (
-    book_id INT PRIMARY KEY,
-    title VARCHAR(100) NOT NULL,
-    author VARCHAR(100) NOT NULL,
-    available_copies INT CHECK (available_copies >= 0)
+---An online store records every purchase in a Purchases table. Each record represents a customer buying a product on a specific date.
+---The analytics team wants to detect situations where multiple customers purchased the same product on the same day.
+---Your task is to identify all unique pairs of customers who bought the same product on the same date.
+---Requirements :product_id must be the same,purchase_date must be the same,Customers must be different,Avoid duplicate pairs:
+---(CustomerA, CustomerB) should appear once,(CustomerB, CustomerA) should not appear again
+
+CREATE TABLE Purchases (
+    purchase_id SERIAL PRIMARY KEY,
+    customer_id INT,
+    product_id INT,
+    purchase_date DATE
 );
 
-CREATE TABLE members (
-    member_id INT PRIMARY KEY,
-    member_name VARCHAR(100) NOT NULL,
-    email VARCHAR(100) UNIQUE
-);
+INSERT INTO Purchases (customer_id, product_id, purchase_date) VALUES(101, 1, '2026-03-01');
+INSERT INTO Purchases (customer_id, product_id, purchase_date) VALUES(102, 1, '2026-03-01');
+INSERT INTO Purchases (customer_id, product_id, purchase_date) VALUES(103, 2, '2026-03-01');
+INSERT INTO Purchases (customer_id, product_id, purchase_date) VALUES(104, 1, '2026-03-01');
+INSERT INTO Purchases (customer_id, product_id, purchase_date) VALUES(105, 3, '2026-03-02');
+INSERT INTO Purchases (customer_id, product_id, purchase_date) VALUES(101, 2, '2026-03-02');
+INSERT INTO Purchases (customer_id, product_id, purchase_date) VALUES(102, 2, '2026-03-02');
+INSERT INTO Purchases (customer_id, product_id, purchase_date) VALUES(106, 1, '2026-03-01');
+INSERT INTO Purchases (customer_id, product_id, purchase_date) VALUES(107, 3, '2026-03-02');
+INSERT INTO Purchases (customer_id, product_id, purchase_date) VALUES(108, 1, '2026-03-03');
 
-CREATE TABLE book_issue (
-    issue_id INT PRIMARY KEY,
-    book_id INT REFERENCES books(book_id),
-    member_id INT REFERENCES members(member_id),
-    issue_date DATE,
-    return_date DATE
-);
+SELECT * FROM Purchases;
 
-INSERT INTO books VALUES
-(1, 'DBMS Concepts', 'Silberschatz', 5),
-(2, 'Operating System', 'Galvin', 3);
-
-
-
-INSERT INTO members VALUES
-(101, 'Amit Kumar', 'amit@gmail.com'),
-(102, 'Neha Sharma', 'neha@gmail.com');
-
--- BOOK ISSUE
-INSERT INTO book_issue(issue_id,book_id,member_id,issue_date,
-return_date)
-VALUES
-(1001, 1, 101, '2025-01-10', NULL);
+SELECT p.customer_id AS CustomerA,
+       p1.customer_id AS CustomerB,
+       p.product_id,
+	   p.purchase_date
+FROM Purchases AS p
+JOIN Purchases AS p1
+ON p.product_id=p1.product_id  
+AND p.purchase_date=p1.purchase_date
+AND p.customer_id<p1.customer_id;
+ 
 
 
-SELECT * FROM books;
-SELECT * FROM members;
-SELECT * FROM book_issue;
 
---UPDATE AVAILABLE BOOKS
-UPDATE books
-SET available_copies = available_copies - 1
-WHERE book_id = 1;
-
---Delete book
-DELETE FROM books WHERE book_id = 2
-
-CREATE ROLE LIBRARIAN1
-WITH LOGIN PASSWORD 'Anin#1';
-GRANT  SELECT ON book_issue TO LIBRARIAN1
 
 
